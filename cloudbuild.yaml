@@ -11,13 +11,16 @@ steps:
     args:
       - -c
       - |
+        echo "🧹 Cleaning old code on VM..."
+        gcloud compute ssh crm-demo-github --zone=us-central1-c --command="rm -rf ~/idurar-erp-crm"
+
         echo "📥 Copying latest code to VM..."
-        gcloud compute scp --recurse /workspace/idurar-erp-crm/ crm-demo-github:~/idurar-erp-crm --zone=us-central1-c
+        gcloud compute scp --recurse /workspace/idurar-erp-crm crm-demo-github:~ --zone=us-central1-c
 
         echo "🚀 Deploying with docker-compose on VM..."
         gcloud compute ssh crm-demo-github --zone=us-central1-c --command="
           cd ~/idurar-erp-crm &&
-          docker-compose -f ~/idurar-erp-crm/docker-compose.yml pull &&
-          docker-compose -f ~/idurar-erp-crm/docker-compose.yml up -d
+          docker-compose pull &&
+          docker-compose up -d
         "
 serviceAccount: "cloud-build-service-account@cqa-portal-server-staging.iam.gserviceaccount.com"
