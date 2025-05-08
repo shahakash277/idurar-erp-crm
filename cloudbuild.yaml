@@ -1,0 +1,16 @@
+steps:
+  - name: gcr.io/cloud-builders/gcloud
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        echo "📦 Copying docker-compose.yml to VM..."
+        gcloud compute scp docker-compose.yml crm-demo-github:~/docker-compose.yml --zone=us-central1-c
+
+        echo "🚀 Deploying with docker-compose on VM..."
+        gcloud compute ssh crm-demo-github --zone=us-central1-c --command="
+          docker-compose -f ~/docker-compose.yml pull &&
+          docker-compose -f ~/docker-compose.yml up -d
+        "
+
+timeout: "600s"
