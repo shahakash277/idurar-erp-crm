@@ -15,7 +15,7 @@ steps:
         gcloud compute scp docker-compose.yml crm-demo-github:~/docker-compose.yml --zone=us-central1-c
 
         echo "📥 Copying latest code to VM..."
-        gcloud compute scp --recurse /workspace/ crm-demo-github:~/idurar-erp-crm --zone=us-central1-c
+        gcloud compute scp --recurse /workspace/idurar-erp-crm/ crm-demo-github:~/idurar-erp-crm --zone=us-central1-c
 
         echo "🚀 Deploying with docker-compose on VM..."
         gcloud compute ssh crm-demo-github --zone=us-central1-c --command="
@@ -23,4 +23,5 @@ steps:
           docker-compose -f ~/docker-compose.yml pull &&
           docker-compose -f ~/docker-compose.yml up -d
         "
+
 serviceAccount: "cloud-build-service-account@cqa-portal-server-staging.iam.gserviceaccount.com"
