@@ -1,25 +1,14 @@
 steps:
-  - name: gcr.io/cloud-builders/git
-    args:
-      - clone
-      - --branch=master
-      - https://github.com/shahakash277/idurar-erp-crm.git
-    dir: /workspace
-
   - name: gcr.io/cloud-builders/gcloud
     entrypoint: bash
     args:
       - -c
       - |
-        echo "🧹 Cleaning old code on VM..."
-        gcloud compute ssh crm-demo-github --zone=us-central1-c --command="rm -rf ~/idurar-erp-crm"
-
-        echo "📥 Copying latest code to VM..."
-        gcloud compute scp --recurse /workspace/idurar-erp-crm crm-demo-github:~ --zone=us-central1-c
-
-        echo "🚀 Deploying with docker-compose on VM..."
+        echo "🔄 Pulling latest code from GitHub on VM..."
         gcloud compute ssh crm-demo-github --zone=us-central1-c --command="
           cd ~/idurar-erp-crm &&
+          git reset --hard &&
+          git pull origin master &&
           docker-compose pull &&
           docker-compose up -d
         "
