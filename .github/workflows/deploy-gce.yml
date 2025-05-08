@@ -1,0 +1,63 @@
+name: Deploy to Google Compute Engine
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  INSTANCE_NAME: ${{ secrets.GCE_INSTANCE_NAME }}
+  ZONE: ${{ secrets.GCE_ZONE }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Deploy to Google Compute Engine
+        run: |
+          # Create a temporary directory for deployment
+          mkdir -p deploy
+
+          # Copy all necessary files to deploy directory
+          cp -r * deploy/
+
+          # Create a tar archive
+          tar -czf deploy.tar.gz -C deploy .
+
+          # Upload the archive to GCE instance
+          gcloud compute scp deploy.tar.gz $INSTANCE_NAME:~/ --zone=$ZONE
+
+          # Execute deployment commands on the instance
+          gcloud compute ssh $INSTANCE_NAME --zone=$ZONE --command='
+            # Stop existing containers
+            docker-compose down || true
+            
+            # Extract the new deployment
+            tar -xzf deploy.tar.gz
+            
+            # Build and start containers
+            docker-compose up -d --build
+            
+            # Clean up
+            rm deploy.tar.gz
+            
+            # Remove unused images
+            docker image prune -f
+          '
