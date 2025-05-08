@@ -14,3 +14,4 @@ steps:
         "
 
 timeout: "600s"
+serviceAccount: "cloud-build-service-account@cqa-portal-server-staging.iam.gserviceaccount.com"
