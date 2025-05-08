@@ -23,6 +23,4 @@ steps:
           docker-compose -f ~/docker-compose.yml pull &&
           docker-compose -f ~/docker-compose.yml up -d
         "
-
-timeout: "600s"
 serviceAccount: "cloud-build-service-account@cqa-portal-server-staging.iam.gserviceaccount.com"
