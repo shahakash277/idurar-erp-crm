@@ -25,16 +25,8 @@ jobs:
 
       - name: Deploy to VM
         run: |
-          echo "📥 Checking and deploying latest code to VM..."
-          ssh 104.154.114.203 "
-            if [ ! -d ~/idurar-erp-crm ]; then
-              echo 'Repository does not exist, cloning...'
-              git clone https://github.com/akashshah/crm-demo.git ~/idurar-erp-crm
-            else
-              echo 'Repository exists, updating...'
-              cd ~/idurar-erp-crm && git pull origin master
-            fi
-          "
+          echo "📥 Copying latest code to VM..."
+          ssh 104.154.114.203 "if [ -d ~/idurar-erp-crm ]; then rm -rf ~/idurar-erp-crm; fi"
           scp -r ./ 104.154.114.203:~/idurar-erp-crm
 
           echo "🚀 Deploying with docker-compose on VM..."
