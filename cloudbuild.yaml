@@ -12,14 +12,24 @@ steps:
       - -c
       - |
         echo "📥 Copying latest code to VM..."
-        gcloud compute ssh crm-demo-github --zone=us-central1-c --command="rm -rf ~/idurar-erp-crm"
-        gcloud compute scp --recurse /workspace/idurar-erp-crm/ crm-demo-github:~/idurar-erp-crm --zone=us-central1-c
+        ssh -i /workspace/crm-demo-key -o StrictHostKeyChecking=no akash_contextqa_com@104.154.114.203 "rm -rf ~/idurar-erp-crm"
+        scp -i /workspace/crm-demo-key -o StrictHostKeyChecking=no -r /workspace/idurar-erp-crm/ akash_contextqa_com@104.154.114.203:~/idurar-erp-crm
 
         echo "🚀 Deploying with docker-compose on VM..."
-        gcloud compute ssh crm-demo-github --zone=us-central1-c --command="
+        ssh -i /workspace/crm-demo-key -o StrictHostKeyChecking=no akash_contextqa_com@104.154.114.203 "
           cd ~/idurar-erp-crm &&
           docker-compose -f ~/idurar-erp-crm/docker-compose.yml down &&
           docker-compose -f ~/idurar-erp-crm/docker-compose.yml build --no-cache &&
           docker-compose -f ~/idurar-erp-crm/docker-compose.yml up -d
         "
+
+  - name: gcr.io/cloud-builders/gcloud
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        echo "🔑 Copying SSH key to workspace..."
+        echo "$_SSH_KEY" > /workspace/crm-demo-key
+        chmod 600 /workspace/crm-demo-key
+
 serviceAccount: "cloud-build-service-account@cqa-portal-server-staging.iam.gserviceaccount.com"
