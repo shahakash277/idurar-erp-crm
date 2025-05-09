@@ -1,0 +1,38 @@
+name: Deploy to VM
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/crm-demo-key
+          chmod 600 ~/.ssh/crm-demo-key
+          echo "Host 104.154.114.203
+            IdentityFile ~/.ssh/crm-demo-key
+            User akash_contextqa_com
+            StrictHostKeyChecking no" > ~/.ssh/config
+          chmod 600 ~/.ssh/config
+
+      - name: Deploy to VM
+        run: |
+          echo "📥 Copying latest code to VM..."
+          ssh 104.154.114.203 "rm -rf ~/idurar-erp-crm"
+          scp -r ./ 104.154.114.203:~/idurar-erp-crm
+
+          echo "🚀 Deploying with docker-compose on VM..."
+          ssh 104.154.114.203 "
+            cd ~/idurar-erp-crm &&
+            docker-compose -f ~/idurar-erp-crm/docker-compose.yml down &&
+            docker-compose -f ~/idurar-erp-crm/docker-compose.yml build --no-cache &&
+            docker-compose -f ~/idurar-erp-crm/docker-compose.yml up -d
+          "
