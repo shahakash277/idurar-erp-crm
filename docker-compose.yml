@@ -16,7 +16,7 @@ services:
       - "8888:8888"
     environment:
       - NODE_ENV=production
-      - DATABASE=mongodb://mongodb:27017/idurar
+      - DATABASE=mongodb+srv://admin:admin@cluster0.d40xx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
     env_file:
       - ./backend/.env
     depends_on:
