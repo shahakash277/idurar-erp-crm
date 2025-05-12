@@ -14,11 +14,9 @@ export default function LoginForm() {
         rules={[
           {
             required: true,
-            message: translate('Please input your email!'),
           },
           {
             type: 'email',
-            message: translate('Please enter a valid email address!'),
           },
         ]}
       >
@@ -35,14 +33,8 @@ export default function LoginForm() {
         rules={[
           {
             required: true,
-            message: translate('Please input your password!'),
-          },
-          {
-            min: 8,
-            message: translate('Password must be at least 8 characters long!'),
           },
         ]}
-        hasFeedback
       >
         <Input.Password
           prefix={<LockOutlined className="site-form-item-icon" />}
