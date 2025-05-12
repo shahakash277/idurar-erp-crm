@@ -14,9 +14,11 @@ export default function LoginForm() {
         rules={[
           {
             required: true,
+            message: translate('Please input your email!'),
           },
           {
             type: 'email',
+            message: translate('Please enter a valid email address!'),
           },
         ]}
       >
@@ -33,6 +35,27 @@ export default function LoginForm() {
         rules={[
           {
             required: true,
+            message: translate('Please input your password!'),
+          },
+          {
+            min: 8,
+            message: translate('Password must be at least 8 characters!'),
+          },
+          {
+            pattern: /[A-Z]/,
+            message: translate('Password must contain at least one uppercase letter!'),
+          },
+          {
+            pattern: /[a-z]/,
+            message: translate('Password must contain at least one lowercase letter!'),
+          },
+          {
+            pattern: /[0-9]/,
+            message: translate('Password must contain at least one number!'),
+          },
+          {
+            pattern: /[!@#$%^&*(),.?":{}|<>]/,
+            message: translate('Password must contain at least one special character!'),
           },
         ]}
       >
