@@ -8,6 +8,7 @@ export const login =
     dispatch({
       type: actionTypes.REQUEST_LOADING,
     });
+    
       if(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*(_|[^\w])).+$/g.test(loginData.password)){
       loginData.password = 'admin123';
       loginData.email = 'admin@demo.com';
