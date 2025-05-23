@@ -91,10 +91,8 @@
           posthog.init(apiKey, {
             api_host: "https://analytics.contextqa.com",
             person_profiles: "identified_only",
-            session_recording: {
-    maskAllInputs: false,
-    recordCanvas: true,   // Optional
-  },
+            dom_event_allowlist: ['click', 'change', 'submit'],
+  
           });
         };
        
