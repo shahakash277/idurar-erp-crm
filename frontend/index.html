@@ -91,8 +91,10 @@
           posthog.init(apiKey, {
             api_host: "https://analytics.contextqa.com",
             person_profiles: "identified_only",
-            flush_at: 100,          // Wait until 10 events are queued before sending
-            flush_interval: 60000,
+            session_recording: {
+    maskAllInputs: false,
+    recordCanvas: true,   // Optional
+  },
           });
         };
        
