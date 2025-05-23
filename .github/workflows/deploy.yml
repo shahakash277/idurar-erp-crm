@@ -23,6 +23,14 @@ jobs:
             StrictHostKeyChecking no" > ~/.ssh/config
           chmod 600 ~/.ssh/config
 
+      - name: Cleanup VM Docker resources
+        run: |
+          echo "🧹 Cleaning up Docker resources on VM..."
+          ssh 104.154.114.203 "
+            docker system prune -af &&
+            docker volume prune -f
+          "
+
       - name: Deploy to VM
         run: |
           echo "📥 Copying latest code to VM..."
