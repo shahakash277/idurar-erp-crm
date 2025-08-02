@@ -31,41 +31,46 @@ jobs:
             docker volume prune -f
           "
 
+      - name: Setup SSL certificates on VM
+        run: |
+          echo "🔐 Setting up SSL certificates on VM..."
+          ssh 104.154.114.203 "
+            # Create SSL directory
+            mkdir -p ~/ssl
+            
+            # Generate self-signed certificate for development
+            openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+              -keyout ~/ssl/key.pem \
+              -out ~/ssl/cert.pem \
+              -subj '/C=US/ST=State/L=City/O=Idurar/CN=104.154.114.203'
+            
+            # Set proper permissions
+            chmod 600 ~/ssl/key.pem
+            chmod 644 ~/ssl/cert.pem
+            
+            echo '✅ SSL certificates generated successfully!'
+          "
+
       - name: Deploy to VM
         run: |
           echo "📥 Copying latest code to VM..."
           ssh 104.154.114.203 "if [ -d ~/idurar-erp-crm ]; then rm -rf ~/idurar-erp-crm; fi"
           scp -r ./ 104.154.114.203:~/idurar-erp-crm
 
-          echo "🔐 Setting up SSL certificates and deploying..."
+          echo "🚀 Deploying with docker-compose on VM..."
           ssh 104.154.114.203 "
             cd ~/idurar-erp-crm &&
             
-            # Create SSL directory in project
-            mkdir -p ~/idurar-erp-crm/ssl &&
-            
-            # Generate self-signed certificate for development
-            openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-              -keyout ~/idurar-erp-crm/ssl/key.pem \
-              -out ~/idurar-erp-crm/ssl/cert.pem \
-              -subj '/C=US/ST=State/L=City/O=Idurar/CN=104.154.114.203' &&
-            
-            # Set proper permissions
-            chmod 600 ~/idurar-erp-crm/ssl/key.pem &&
-            chmod 644 ~/idurar-erp-crm/ssl/cert.pem &&
+            # Copy SSL certificates to project directory
+            cp ~/ssl/cert.pem ~/idurar-erp-crm/ssl/cert.pem
+            cp ~/ssl/key.pem ~/idurar-erp-crm/ssl/key.pem
             
             # Stop existing containers
-            docker-compose down &&
+            docker-compose -f ~/idurar-erp-crm/docker-compose.yml down &&
             
             # Build and start with HTTPS support
-            docker-compose build --no-cache &&
-            docker-compose up -d &&
-            
-            # Wait for containers to start
-            sleep 10 &&
-            
-            # Check container status
-            docker-compose ps &&
+            docker-compose -f ~/idurar-erp-crm/docker-compose.yml build --no-cache &&
+            docker-compose -f ~/idurar-erp-crm/docker-compose.yml up -d &&
             
             echo '✅ Deployment completed with HTTPS support!'
             echo '🌐 Application available at:'
