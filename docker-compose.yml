@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 services:
   mongodb:
     image: mongo:latest
@@ -28,9 +28,12 @@ services:
     container_name: frontend
     ports:
       - "80:80"
+      - "443:443"
+    volumes:
+      - ./ssl:/etc/nginx/ssl:ro
     depends_on:
       - backend
     restart: unless-stopped
 
 volumes:
-  mongodb_data: 
+  mongodb_data:
