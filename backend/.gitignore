@@ -6,9 +6,3 @@ notes.md
 .env.local
 
 *.pdf
-
-# SSL Certificates
-ssl/
-*.pem
-*.key
-*.crt
